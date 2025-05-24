@@ -1,6 +1,7 @@
 # Ignore build artifacts
 main.js
 main.js.map
+release/*
 
 # Dependency directory
 node\_modules/
