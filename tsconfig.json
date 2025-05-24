@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "lib": ["ES6", "DOM"],
+      "module": "CommonJS",
+      "strict": true,
+      "esModuleInterop": true,
+      "outDir": ".",
+      "baseUrl": ".",
+      "types": ["obsidian"]
+    },
+    "include": ["main.ts"],
+    "exclude": [""]
+}
+  
