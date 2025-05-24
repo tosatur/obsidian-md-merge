@@ -6,6 +6,7 @@
     "description": "Merge all markdown files from a folder into a single file.",
     "author": "Tosatur <me@tosatur.com>",
     "authorUrl": "https://tosatur.com",
-    "main": "main.js"
+    "main": "main.js",
+    "isDesktopOnly": "false"
   }
   
