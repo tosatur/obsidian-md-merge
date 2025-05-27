@@ -36,9 +36,9 @@
 ## Settings
 
 * **Source folder**: Path relative to vault root; leave blank to merge from root.
-* **Output folder**: Where the merged file is saved; defaults to `/merged`.
-* **Output file name**: Template name, supports `{date}`.
-* **Include hidden files**: Include files that begin with a `.`.
+* **Output folder**: Where the merged file is saved; defaults to `/merged`
+* **Output file name**: Template name, supports `{date}`
+* **Include hidden files**: Include files that begin with a `.`
 * **Recursive mode**: Include files from subfolders.
 * **Excluded files**: Glob patterns to ignore (comma-separated).
 * **Show sidebar button**: Show/hide the ribbon icon.
