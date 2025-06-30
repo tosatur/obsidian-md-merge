@@ -65,4 +65,5 @@ if (prod) {
 } else {
   await context.watch();
   console.log("👀 Watching for changes...");
+  
 }
