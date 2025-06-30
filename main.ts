@@ -68,7 +68,7 @@ export default class MergeMarkdownPlugin extends Plugin {
     if (!this.settings.folderName.trim()) {
       folder = this.app.vault.getRoot();
     } else {
-      const found = this.app.vault.getAbstractFileByPath(this.settings.folderName);
+      const found = this.app.vault.getFolderByPath(this.settings.folderName);
       if (!found || !(found instanceof TFolder)) {
         new Notice(`Folder "${this.settings.folderName}" not found or is not a folder.`);
         return;
@@ -118,7 +118,7 @@ export default class MergeMarkdownPlugin extends Plugin {
     }
 
     try {
-      const existingFile = this.app.vault.getAbstractFileByPath(outputPath);
+      const existingFile = this.app.vault.getFileByPath(outputPath);
       if (existingFile && existingFile instanceof TFile) {
         await this.app.vault.modify(existingFile, mergedContent);
       } else {
@@ -137,7 +137,7 @@ export default class MergeMarkdownPlugin extends Plugin {
     let currentPath = '';
     for (const part of parts) {
       currentPath = currentPath ? `${currentPath}/${part}` : part;
-      const exists = this.app.vault.getAbstractFileByPath(currentPath);
+      const exists = this.app.vault.getFolderByPath(currentPath);
       if (!exists) {
         await this.app.vault.createFolder(currentPath);
       }
