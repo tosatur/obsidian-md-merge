@@ -1,7 +1,7 @@
 {
     "id": "md-merge",
     "name": ".md Merge",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "minAppVersion": "1.8.10",
     "description": "Merge all markdown files from a folder into a single file.",
     "author": "Tosatur",

@@ -16,6 +16,10 @@ interface MergePluginSettings {
   includeHidden: boolean;
   excludedFiles: string;
   recursive: boolean;
+  MDMtitle: string;
+  isOnlyBody: boolean;
+  MDMlist: string[];
+  showRibbonIcon: boolean;
 }
 
 const DEFAULT_SETTINGS: MergePluginSettings = {
@@ -25,6 +29,11 @@ const DEFAULT_SETTINGS: MergePluginSettings = {
   includeHidden: false,
   excludedFiles: "",
   recursive: false,
+  MDMtitle: 'MDMtitle',
+  isOnlyBody: false,
+  MDMlist: [],
+  showRibbonIcon: true,
+  
 };
 
 export default class MergeMarkdownPlugin extends Plugin {
@@ -32,6 +41,12 @@ export default class MergeMarkdownPlugin extends Plugin {
 
   async onload() {
     await this.loadSettings();
+
+    if (this.settings.showRibbonIcon) {
+      this.addRibbonIcon('merge', 'Merge .md files', async () => {
+        await this.mergeMarkdownFiles();
+      });
+    }
 
     this.addCommand({
       id: 'merge-md-files',
@@ -104,9 +119,47 @@ export default class MergeMarkdownPlugin extends Plugin {
     let mergedContent = "";
 
     for (const file of files) {
-      const content = await this.app.vault.read(file);
-      const header = file.basename;
-      mergedContent += `# ${header}\n\n${content.trim()}\n\n`;
+      let header =""
+      let content = ""
+      let finalContent=""
+      const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter || {};
+      if (this.settings.MDMtitle){
+        if (this.settings.MDMtitle in frontmatter && 
+        typeof frontmatter[this.settings.MDMtitle] === 'string') {
+      header = frontmatter[this.settings.MDMtitle] ?? "";
+    }
+        if (header){
+          header = `${header}\n\n`;
+        }
+      } else {
+        header = `# ${file.basename}\n\n`;
+      }
+      if(this.settings.MDMlist.length>0){
+      
+      const array1: string[] = this.settings?.MDMlist ?? [];
+      const array2: string[] = frontmatter?.MDMlist ?? [];
+      const set2 = new Set(array2);
+      const hasMatch: boolean = array1.some(item => set2.has(item));
+      if(hasMatch){
+        content = await this.app.vault.read(file);
+        if(this.settings.isOnlyBody){
+       const endIndex = content.indexOf('\n---\n', content.indexOf('---\n') + 3);
+       content = endIndex > -1 ? content.slice(endIndex + 5) : content;
+      }
+        
+        finalContent = `${header}${content.trim()}\n\n`;
+      }
+      } else {
+       content = await this.app.vault.read(file);
+       if(this.settings.isOnlyBody){
+       const endIndex = content.indexOf('\n---\n', content.indexOf('---\n') + 3);
+       content = endIndex > -1 ? content.slice(endIndex + 5) : content;
+      }
+        
+        finalContent = `${header}${content.trim()}\n\n`;
+      }
+
+      mergedContent += finalContent;
     }
 
     try {
@@ -248,5 +301,61 @@ class MergeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
-  }
+
+  new Setting(containerEl)
+  .setName('Custom Title Property seperator')
+  .setDesc('Frontmatter property name for custom title seperator (e.g., MDMtitle). Make sure the property is of type string!')
+  .addText(text => text
+    .setPlaceholder('MDMtitle')
+    .setValue(this.plugin.settings.MDMtitle)
+    .onChange(async (value) => {
+      this.plugin.settings.MDMtitle = value;
+      await this.plugin.saveSettings();
+    })
+  );
+
+
+      new Setting(containerEl)
+      .setName("Remove frontmatter before merge")
+      .setDesc("Will remove the front matter block before merging the content")
+      .addToggle(toggle =>
+        toggle
+          .setValue(this.plugin.settings.isOnlyBody)
+          .onChange(async (value) => {
+            this.plugin.settings.isOnlyBody = value;
+            await this.plugin.saveSettings();
+          })
+      ); 
+
+
+      new Setting(containerEl)
+      .setName("Use list to keep")
+      .setDesc('Comma-separated list. Will keep only files for merge which hold the listed list items in property "MDMlist".')
+      .addTextArea(text =>
+        text
+          .setPlaceholder("npc, secret, date")
+          .setValue(this.plugin.settings.MDMlist.join(','))
+          .onChange(async (value) => {
+            let tagList = value.split(',').map(item => item.trim());
+            if (tagList[0]==="") { tagList = []}
+            this.plugin.settings.MDMlist = tagList;
+            await this.plugin.saveSettings();
+          })
+      );
+      
+
+    new Setting(containerEl)
+      .setName("Show ribbon button")
+      .setDesc("Toggle to show or hide the ribbon button. This setting will reload Obsidian if changed.")
+      .addToggle(toggle =>
+        toggle
+          .setValue(this.plugin.settings.showRibbonIcon)
+          .onChange(async (value) => {
+            this.plugin.settings.showRibbonIcon = value;
+            await this.plugin.saveSettings();
+            window.location.reload();
+          })
+      );
+  
+    }
 }

@@ -40,6 +40,10 @@
 * **Include hidden files**: Include files that begin with a `.`
 * **Recursive mode**: Include files from subfolders.
 * **Excluded files**: Glob patterns to ignore (comma-separated).
+* **Custom Title Property**: Expects a string which ist the name of the property which holds the separator title for example "MDMtitle". The property must be a string type property.
+* **Remove frontmatter before merge**: Removes frontmatter information before note is merged
+* **Use list to keep**: Will expect a frontmatter property "MDMlist" of type list item. If one of the items in this setting is found in the list of the property then the note will be exported and merged.
+* **Show ribbon Button**: Will show a ribbon button for export in the left sidebar if set to true. (Was originally removed - probably because if became an official plugin)
 
 ## Commands
 
